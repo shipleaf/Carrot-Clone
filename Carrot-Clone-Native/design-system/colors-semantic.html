@@ -1,0 +1,36 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"/>
+<link rel="stylesheet" href="../colors_and_type.css"/>
+<style>
+  body { margin:0; padding:24px; background:#fff; font-family: var(--font-sans); }
+  .grid { display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; }
+  .pair { border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+  .pair .top { height: 54px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:700; letter-spacing:-.01em; }
+  .pair .bot { height: 26px; display:flex; align-items:center; padding:0 10px; font-family: var(--font-mono); font-size: 11px; }
+  .meta { padding: 8px 10px; font-size:11px; }
+  .meta .name { font-weight:700; color: var(--fg-1); }
+  .meta .role { color: var(--fg-3); margin-top:2px; }
+</style></head>
+<body>
+<div class="grid">
+  <div class="pair">
+    <div class="top" style="background:#3182F6">Blue 500</div>
+    <div class="bot" style="background:#DCECFF;color:#3182F6">Blue 100</div>
+    <div class="meta"><div class="name">Blue</div><div class="role">Unselected friend marker</div></div>
+  </div>
+  <div class="pair">
+    <div class="top" style="background:#F04438">Red 500</div>
+    <div class="bot" style="background:#FFE5E3;color:#F04438">Red 100</div>
+    <div class="meta"><div class="name">Red</div><div class="role">Selected friend · errors</div></div>
+  </div>
+  <div class="pair">
+    <div class="top" style="background:#12B886">Green 500</div>
+    <div class="bot" style="background:#D9F7EB;color:#12B886">Green 100</div>
+    <div class="meta"><div class="name">Green</div><div class="role">On-time · active session</div></div>
+  </div>
+  <div class="pair">
+    <div class="top" style="background:#FFC839;color:#5C2003">Yellow 500</div>
+    <div class="bot" style="background:#FFF4D0;color:#8F3206">Yellow 100</div>
+    <div class="meta"><div class="name">Yellow</div><div class="role">ETA highlight</div></div>
+  </div>
+</div>
+</body></html>

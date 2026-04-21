@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Store {
+  id                    Int          @id @default(autoincrement())
+  name                  String
+  category              String
+  lat                   Float
+  lng                   Float
+  address               String
+  phone                 String
+  instagramUrl          String?
+  description           String?
+  ownerName             String
+  ownerProfileImageUrl  String?
+  createdAt             DateTime     @default(now())
+
+  images    StoreImage[]
+  hours     StoreHours[]
+  menuItems MenuItem[]
+  reviews   Review[]
+}
+
+model StoreImage {
+  id      Int    @id @default(autoincrement())
+  storeId Int
+  url     String
+  order   Int
+
+  store Store @relation(fields: [storeId], references: [id])
+}
+
+model StoreHours {
+  id        Int     @id @default(autoincrement())
+  storeId   Int
+  dayOfWeek Int
+  openTime  String
+  closeTime String
+  isClosed  Boolean @default(false)
+
+  store Store @relation(fields: [storeId], references: [id])
+}
+
+model MenuItem {
+  id          Int     @id @default(autoincrement())
+  storeId     Int
+  name        String
+  price       Int
+  description String?
+  imageUrl    String?
+
+  store Store @relation(fields: [storeId], references: [id])
+}
+
+model Review {
+  id                   Int      @id @default(autoincrement())
+  storeId              Int
+  userId               String
+  userProfileImageUrl  String?
+  rating               Int
+  content              String
+  likeCount            Int      @default(0)
+  createdAt            DateTime @default(now())
+
+  store  Store         @relation(fields: [storeId], references: [id])
+  images ReviewImage[]
+}
+
+model ReviewImage {
+  id       Int    @id @default(autoincrement())
+  reviewId Int
+  url      String
+
+  review Review @relation(fields: [reviewId], references: [id])
+}

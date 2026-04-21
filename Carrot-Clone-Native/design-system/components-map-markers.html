@@ -1,0 +1,59 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"/>
+<link rel="stylesheet" href="../colors_and_type.css"/>
+<link rel="stylesheet" href="../ui_kits/app/app.css"/>
+<style>
+  body { margin:0; padding:20px; background:#fff; font-family: var(--font-sans); }
+  .grp { margin-bottom: 18px; }
+  .cap { font-size: 10px; font-family: var(--font-mono); color: var(--fg-4); margin-bottom: 8px; }
+  .stack { display:flex; align-items:center; position:relative; height: 200px; }
+  .stack svg { position:absolute; }
+</style></head>
+<body>
+<div class="grp">
+  <div class="cap">ROUTE MAP MARKERS</div>
+  <svg viewBox="0 0 500 140" width="100%" height="140">
+    <!-- route line -->
+    <path d="M30 100 Q 120 40 240 70 T 470 50" fill="none" stroke="#FF6F0F" stroke-width="4" stroke-linecap="round"/>
+    <path d="M30 100 Q 120 40 240 70 T 470 50" fill="none" stroke="#FFA66B" stroke-width="4" stroke-linecap="round" stroke-dasharray="1 10"/>
+
+    <!-- stops -->
+    <g transform="translate(30,100)"><circle r="13" fill="#D1D6DB" stroke="#D1D6DB" stroke-width="3"/><text text-anchor="middle" y="4" font-size="11" font-weight="700" fill="#fff" font-family="Pretendard">3</text></g>
+    <g transform="translate(150,65)"><circle r="13" fill="#fff" stroke="#FF6F0F" stroke-width="3"/><text text-anchor="middle" y="4" font-size="11" font-weight="700" fill="#FF6F0F" font-family="Pretendard">2</text></g>
+    <g transform="translate(300,80)"><circle r="13" fill="#FF6F0F" stroke="#FF6F0F" stroke-width="3"/><text text-anchor="middle" y="4" font-size="11" font-weight="700" fill="#fff" font-family="Pretendard">1</text></g>
+    <g transform="translate(470,50)"><circle r="13" fill="#fff" stroke="#FF6F0F" stroke-width="3"/><text text-anchor="middle" y="4" font-size="11" font-weight="700" fill="#FF6F0F" font-family="Pretendard">4</text></g>
+
+    <!-- bus -->
+    <g transform="translate(100,75)">
+      <circle r="22" fill="#FF6F0F" opacity="0.18"/>
+      <circle r="16" fill="#FF6F0F"/>
+      <g stroke="#FFF" stroke-width="1.6" stroke-linecap="round" fill="none" transform="translate(-8,-8)">
+        <path d="M3 12V4a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v8"/>
+        <rect x="2" y="12" width="12" height="2" rx="1" fill="#FFF"/>
+      </g>
+    </g>
+
+    <!-- friend selected -->
+    <g transform="translate(220,60)">
+      <circle r="26" fill="#FF6F0F" opacity="0.15"/>
+      <g transform="translate(0,-6)">
+        <path d="M0 22 L -10 10 A 12 12 0 1 1 10 10 Z" fill="#FF6F0F"/>
+        <circle cy="-2" r="9" fill="#fff"/>
+        <text text-anchor="middle" y="2" font-size="10" font-weight="700" fill="#FF6F0F" font-family="Pretendard">민</text>
+      </g>
+    </g>
+    <!-- friend unsel -->
+    <g transform="translate(390,55)">
+      <g transform="translate(0,-6)">
+        <path d="M0 22 L -10 10 A 12 12 0 1 1 10 10 Z" fill="#3182F6"/>
+        <circle cy="-2" r="9" fill="#fff"/>
+        <text text-anchor="middle" y="2" font-size="10" font-weight="700" fill="#3182F6" font-family="Pretendard">승</text>
+      </g>
+    </g>
+  </svg>
+</div>
+<div style="display:flex; gap:20px; font-size: 11px; color: var(--fg-3);">
+  <div><b style="color:var(--fg-1)">Stop</b> · numbered circle · carrot/white for upcoming · filled gray for passed</div>
+  <div><b style="color:var(--fg-1)">Bus</b> · carrot dot w/ halo</div>
+  <div><b style="color:var(--fg-1)">Friend</b> · carrot = selected · blue = others</div>
+</div>
+</body></html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"/>
+<link rel="stylesheet" href="../colors_and_type.css"/>
+<link rel="stylesheet" href="../ui_kits/app/app.css"/>
+<style>
+  body { margin:0; padding:24px; background:#fff; font-family: var(--font-sans); }
+  .row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+  .cap { font-size: 10px; font-family: var(--font-mono); color: var(--fg-4); width: 80px; flex-shrink: 0; padding-top:8px;}
+</style></head>
+<body>
+<div class="row"><div class="cap">ENABLED</div>
+  <button class="chip">전체</button>
+  <button class="chip">1호차</button>
+  <button class="chip">2호차 <span class="count">6</span></button>
+  <button class="chip">야간편</button>
+</div>
+<div class="row"><div class="cap">ACTIVE</div>
+  <button class="chip active">전체</button>
+  <button class="chip active">운행 중 <span class="count">3</span></button>
+</div>
+<div class="row"><div class="cap">SOLID</div>
+  <button class="chip solid">
+    <svg width="14" height="14" style="color:#fff"><use href="../assets/icons.svg#broadcast"/></svg>
+    공유 중
+  </button>
+  <span class="badge">2</span>
+  <span class="badge" style="background:var(--carrot-500)">NEW</span>
+</div>
+</body></html>

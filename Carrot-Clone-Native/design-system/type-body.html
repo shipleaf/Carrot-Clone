@@ -1,0 +1,18 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"/>
+<link rel="stylesheet" href="../colors_and_type.css"/>
+<style>
+  body { margin:0; padding:24px; background:#fff; font-family: var(--font-sans); color: var(--fg-1); }
+  .row { display:flex; align-items:baseline; gap:16px; padding: 8px 0; border-bottom: 1px solid var(--divider); }
+  .row:last-child { border-bottom: 0; }
+  .label { width: 90px; font-size: 11px; font-family: var(--font-mono); color: var(--fg-3); font-weight: 500; flex-shrink: 0; }
+  .sample { flex: 1; }
+  .spec { font-size: 10px; font-family: var(--font-mono); color: var(--fg-4); flex-shrink: 0; }
+</style></head>
+<body>
+  <div class="row"><div class="label">body1</div><div class="sample t-body1">친구가 셔틀버스에 먼저 탔어요. 3분 뒤 도착 예정.</div><div class="spec">16/24 · 400</div></div>
+  <div class="row"><div class="label">body2</div><div class="sample t-body2">10초마다 현재 위치를 친구들에게 전송해요.</div><div class="spec">14/20 · 400</div></div>
+  <div class="row"><div class="label">caption</div><div class="sample t-caption">30초 전 업데이트 · 다음 정류장까지 약 420m</div><div class="spec">13/18 · 400</div></div>
+  <div class="row"><div class="label">micro</div><div class="sample t-micro">실시간 도착 예정</div><div class="spec">11/14 · 500</div></div>
+  <div class="row"><div class="label">button</div><div class="sample t-button">위치 공유 시작</div><div class="spec">16/20 · 600</div></div>
+  <div class="row"><div class="label">mono · tnum</div><div class="sample t-mono t-body1">08:23 · 12분 · 1호차</div><div class="spec">tabular nums</div></div>
+</body></html>

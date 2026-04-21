@@ -1,0 +1,25 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"/>
+<link rel="stylesheet" href="../colors_and_type.css"/>
+<link rel="stylesheet" href="../ui_kits/app/app.css"/>
+<style>
+  body { margin:0; padding:24px; background:#fff; font-family: var(--font-sans); }
+  .row { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:10px; }
+  .row:last-child { margin-bottom: 0; }
+  .cap { font-size: 10px; font-family: var(--font-mono); color: var(--fg-4); width: 56px; flex-shrink: 0; }
+</style></head>
+<body>
+  <div class="row"><div class="cap">PRIMARY</div>
+    <button class="btn btn-primary">위치 공유 시작</button>
+    <button class="btn btn-primary btn-sm">저장</button>
+    <button class="btn btn-primary" disabled>비활성</button>
+  </div>
+  <div class="row"><div class="cap">SECONDARY</div>
+    <button class="btn btn-secondary">취소</button>
+    <button class="btn btn-outline">더보기</button>
+    <button class="btn btn-ghost">로그아웃</button>
+  </div>
+  <div class="row"><div class="cap">DANGER</div>
+    <button class="btn btn-danger">친구 삭제</button>
+    <button class="btn btn-danger btn-sm">거절</button>
+  </div>
+</body></html>

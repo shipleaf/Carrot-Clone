@@ -1,0 +1,32 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"/>
+<link rel="stylesheet" href="../colors_and_type.css"/>
+<link rel="stylesheet" href="../ui_kits/app/app.css"/>
+<style>
+  body { margin:0; padding:24px; background:#fff; font-family: var(--font-sans); }
+  .cap { font-size: 10px; font-family: var(--font-mono); color: var(--fg-4); margin-bottom: 6px; }
+  .grp { margin-bottom: 14px; }
+  .field-grp { max-width: 300px; }
+</style></head>
+<body>
+<div class="grp field-grp">
+  <div class="cap">DEFAULT</div>
+  <div class="input-wrap">
+    <span class="icon-left"><svg width="20" height="20"><use href="../assets/icons.svg#mail"/></svg></span>
+    <input class="input" placeholder="example@email.com"/>
+  </div>
+</div>
+<div class="grp field-grp">
+  <div class="cap">FOCUS</div>
+  <div class="input-wrap">
+    <span class="icon-left"><svg width="20" height="20"><use href="../assets/icons.svg#lock"/></svg></span>
+    <input class="input" value="••••••••" style="border-color: var(--carrot-500); box-shadow: 0 0 0 3px var(--carrot-50);"/>
+  </div>
+</div>
+<div class="grp field-grp">
+  <div class="cap">SEARCH</div>
+  <div style="position:relative;">
+    <svg width="18" height="18" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--fg-3);"><use href="../assets/icons.svg#search"/></svg>
+    <input class="search-input" value="민지"/>
+  </div>
+</div>
+</body></html>
