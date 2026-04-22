@@ -23,8 +23,21 @@ export async function GET(request: NextRequest) {
       category: true,
       lat: true,
       lng: true,
+      ownerName: true,
+      ownerProfileImageUrl: true,
+      news: {
+        orderBy: { createdAt: "desc" },
+        take: 1,
+        select: { content: true },
+      },
     },
   });
 
-  return NextResponse.json(stores);
+  const result = stores.map((s) => ({
+    ...s,
+    latestNews: s.news[0]?.content ?? null,
+    news: undefined,
+  }));
+
+  return NextResponse.json(result);
 }

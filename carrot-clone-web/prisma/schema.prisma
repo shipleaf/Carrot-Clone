@@ -25,6 +25,7 @@ model Store {
   hours     StoreHours[]
   menuItems MenuItem[]
   reviews   Review[]
+  news      StoreNews[]
 }
 
 model StoreImage {
@@ -78,4 +79,13 @@ model ReviewImage {
   url      String
 
   review Review @relation(fields: [reviewId], references: [id])
+}
+
+model StoreNews {
+  id        Int      @id @default(autoincrement())
+  storeId   Int
+  content   String
+  createdAt DateTime @default(now())
+
+  store Store @relation(fields: [storeId], references: [id])
 }

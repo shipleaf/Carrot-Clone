@@ -158,6 +158,12 @@ async function main() {
     },
   ];
 
+  const newsDataByName: Record<string, string> = {
+    "블루보틀 장덕점": "🆕 제주 한라봉 라떼 신메뉴 출시! 상큼한 한라봉과 부드러운 우유의 조화, 지금 바로 만나보세요 ☀️",
+    "온더테이블": "🎉 점심 특선 메뉴 런칭! 평일 11시~13시 한우 불고기 정식 15% 할인 이벤트 진행 중입니다",
+    "스시 료코": "🐟 이번 주 오마카세 재료: 홋카이도산 참다랑어 입고! 한정 12석, 예약은 인스타 DM으로",
+  };
+
   for (const store of stores) {
     const { images, hours, menuItems, ...storeData } = store;
     const created = await prisma.store.create({
@@ -168,6 +174,12 @@ async function main() {
         menuItems: { create: menuItems },
       },
     });
+
+    if (newsDataByName[store.name]) {
+      await prisma.storeNews.create({
+        data: { storeId: created.id, content: newsDataByName[store.name] },
+      });
+    }
 
     // 리뷰 2개씩
     await prisma.review.createMany({
@@ -192,7 +204,7 @@ async function main() {
     });
   }
 
-  console.log("Seed 완료: 매장 5개 + 리뷰 10개 입력");
+  console.log("Seed 완료: 매장 5개 + 뉴스 3개 + 리뷰 10개 입력");
 }
 
 main()
