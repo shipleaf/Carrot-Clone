@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
         include: { images: true },
         orderBy: { createdAt: "desc" },
       },
+      news: { orderBy: { createdAt: "desc" }, take: 1 },
     },
   });
 
@@ -41,5 +42,6 @@ export async function GET(request: NextRequest) {
     return d < dClosest ? store : closest;
   });
 
-  return NextResponse.json(nearest);
+  const { news, ...rest } = nearest;
+  return NextResponse.json({ ...rest, latestNews: news[0]?.content ?? null });
 }

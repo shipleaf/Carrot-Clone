@@ -6,6 +6,14 @@ const adapter = new PrismaBetterSqlite3({ url: path.resolve(process.cwd(), "dev.
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
+  await prisma.reviewImage.deleteMany();
+  await prisma.review.deleteMany();
+  await prisma.storeNews.deleteMany();
+  await prisma.menuItem.deleteMany();
+  await prisma.storeHours.deleteMany();
+  await prisma.storeImage.deleteMany();
+  await prisma.store.deleteMany();
+
   // 광주광역시 광산구 장덕동 근처 매장 데이터 (기본 지도 중심: 35.1897739, 126.8113884)
   const stores = [
     {

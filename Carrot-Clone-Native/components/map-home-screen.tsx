@@ -3,6 +3,7 @@ import { Image } from 'expo-image';
 import { useEffect, useRef, useState } from 'react';
 import {
   Animated,
+  Easing,
   PanResponder,
   Platform,
   Pressable,
@@ -25,7 +26,7 @@ const mapUrl =
 const GRABBER_AREA = 28;
 const NAME_ROW = 52;
 const PEEK = GRABBER_AREA + NAME_ROW;
-const SQUARE_HALF = 80; // 160×160px center detection square
+const SQUARE_HALF = 160; // 320x320px center detection square
 
 type Snap = 0 | 1 | 2;
 
@@ -42,28 +43,28 @@ interface StoreDetail {
   ownerName: string;
   ownerProfileImageUrl: string | null;
   latestNews: string | null;
-  images: Array<{ id: number; url: string; order: number }>;
-  hours: Array<{
+  images: { id: number; url: string; order: number }[];
+  hours: {
     id: number;
     dayOfWeek: number;
     openTime: string;
     closeTime: string;
     isClosed: boolean;
-  }>;
-  menuItems: Array<{
+  }[];
+  menuItems: {
     id: number;
     name: string;
     price: number;
     description: string | null;
-  }>;
-  reviews: Array<{
+  }[];
+  reviews: {
     id: number;
     userId: string;
     rating: number;
     content: string;
     likeCount: number;
     userProfileImageUrl: string | null;
-  }>;
+  }[];
 }
 
 interface NewsOverlayStore {
@@ -76,16 +77,42 @@ interface NewsOverlayStore {
 
 // ── Skeleton UI ───────────────────────────────────────────────────────────────
 
-function StoreSkeleton({ opacity }: { opacity: Animated.Value }) {
+type ShimmerValue = Animated.AnimatedInterpolation<number>;
+
+function ShimmerStrip({ shimmer }: { shimmer: ShimmerValue }) {
+  return (
+    <Animated.View
+      style={[skStyles.shimmerOverlay, { transform: [{ translateX: shimmer }] }]}
+    />
+  );
+}
+
+function StoreSkeleton({ opacity, shimmer }: { opacity: Animated.Value; shimmer: ShimmerValue }) {
   return (
     <View style={skStyles.row}>
-      <Animated.View style={[skStyles.thumb, { opacity }]} />
+      <Animated.View style={[skStyles.thumb, { opacity, overflow: 'hidden' }]}>
+        <ShimmerStrip shimmer={shimmer} />
+      </Animated.View>
       <View style={skStyles.lines}>
-        <Animated.View style={[skStyles.line, { width: '35%', opacity }]} />
-        <Animated.View style={[skStyles.line, { width: '75%', marginTop: 7, opacity }]} />
-        <Animated.View style={[skStyles.line, { width: '50%', marginTop: 7, opacity }]} />
+        <Animated.View style={[skStyles.line, { width: '35%', opacity, overflow: 'hidden' }]}>
+          <ShimmerStrip shimmer={shimmer} />
+        </Animated.View>
+        <Animated.View style={[skStyles.line, { width: '75%', marginTop: 7, opacity, overflow: 'hidden' }]}>
+          <ShimmerStrip shimmer={shimmer} />
+        </Animated.View>
+        <Animated.View style={[skStyles.line, { width: '50%', marginTop: 7, opacity, overflow: 'hidden' }]}>
+          <ShimmerStrip shimmer={shimmer} />
+        </Animated.View>
       </View>
     </View>
+  );
+}
+
+function TitleSkeleton({ opacity, shimmer }: { opacity: Animated.Value; shimmer: ShimmerValue }) {
+  return (
+    <Animated.View style={[skStyles.titleLine, { opacity, overflow: 'hidden' }]}>
+      <ShimmerStrip shimmer={shimmer} />
+    </Animated.View>
   );
 }
 
@@ -94,6 +121,8 @@ const skStyles = StyleSheet.create({
   thumb: { width: 80, height: 80, borderRadius: 10, backgroundColor: '#E8EAED' },
   lines: { flex: 1, justifyContent: 'center' },
   line: { height: 13, borderRadius: 6, backgroundColor: '#E8EAED' },
+  titleLine: { height: 16, borderRadius: 6, backgroundColor: '#E8EAED', width: '45%', alignSelf: 'flex-start', marginLeft: 20 },
+  shimmerOverlay: { position: 'absolute', top: 0, bottom: 0, width: 100, backgroundColor: 'rgba(255,255,255,0.55)' },
 });
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -109,6 +138,9 @@ export function MapHomeScreen() {
   const [newsOverlayStore, setNewsOverlayStore] = useState<NewsOverlayStore | null>(null);
   const [showNewsOverlay, setShowNewsOverlay] = useState(false);
   const showNewsOverlayRef = useRef(false);
+  const loadedStoreIdRef = useRef<number | null>(null);
+  const requestedStoreIdRef = useRef<number | null>(null);
+  const storeRequestSeqRef = useRef(0);
 
   // Skeleton pulse animation
   const skeletonOpacity = useRef(new Animated.Value(0.4)).current;
@@ -122,6 +154,25 @@ export function MapHomeScreen() {
     anim.start();
     return () => anim.stop();
   }, [skeletonOpacity]);
+
+  const shimmerAnim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    const anim = Animated.loop(
+      Animated.timing(shimmerAnim, {
+        toValue: 1,
+        duration: 1400,
+        useNativeDriver: true,
+        easing: Easing.linear,
+      }),
+    );
+    anim.start();
+    return () => anim.stop();
+  }, [shimmerAnim]);
+
+  const shimmerTranslate = shimmerAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-300, 400],
+  });
 
   // Stable refs for PanResponder closures
   const heightRef = useRef(height);
@@ -156,8 +207,6 @@ export function MapHomeScreen() {
     `);
   };
 
-  // Sends the center detection square to the web based on current snap position.
-  // Must only use refs to remain safe inside PanResponder closures.
   const injectCenterPoint = (s: Snap) => {
     if (!webviewReadyRef.current) return;
     const h = heightRef.current;
@@ -201,15 +250,44 @@ export function MapHomeScreen() {
     }).start();
   };
 
+  const hideNewsOverlay = () => {
+    showNewsOverlayRef.current = false;
+    setShowNewsOverlay(false);
+  };
+
   const fetchStore = (storeId: number) => {
+    if (requestedStoreIdRef.current === storeId) return;
+    if (loadedStoreIdRef.current === storeId) {
+      return;
+    }
+
+    const requestSeq = storeRequestSeqRef.current + 1;
+    storeRequestSeqRef.current = requestSeq;
+    requestedStoreIdRef.current = storeId;
+    loadedStoreIdRef.current = null;
+
+    setFocusedStore(null);
+    hideNewsOverlay();
     setIsLoadingStore(true);
     fetch(`${mapUrl}/api/stores/${storeId}`)
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        return r.json();
+      })
       .then((detail: StoreDetail) => {
+        if (requestSeq !== storeRequestSeqRef.current) return;
+        console.log('[native] fetchStore success:', storeId, detail.name);
+        requestedStoreIdRef.current = null;
+        loadedStoreIdRef.current = detail.id;
         setFocusedStore(detail);
         setIsLoadingStore(false);
       })
-      .catch(() => setIsLoadingStore(false));
+      .catch((e) => {
+        if (requestSeq !== storeRequestSeqRef.current) return;
+        console.log('[native] fetchStore FAIL:', storeId, e);
+        requestedStoreIdRef.current = null;
+        setIsLoadingStore(false);
+      });
   };
 
   const panResponder = useRef(
@@ -269,8 +347,13 @@ export function MapHomeScreen() {
           if (msg.storeId) {
             fetchStore(msg.storeId);
           } else {
+            storeRequestSeqRef.current += 1;
+            requestedStoreIdRef.current = null;
+            loadedStoreIdRef.current = null;
+        
             setFocusedStore(null);
             setIsLoadingStore(false);
+            hideNewsOverlay();
           }
           break;
         case 'storeClicked':
@@ -367,7 +450,7 @@ export function MapHomeScreen() {
             <Text style={styles.newsStoreName} numberOfLines={1}>
               {newsOverlayStore.name}
             </Text>
-            <Text style={styles.newsBody} numberOfLines={3}>
+            <Text style={styles.newsBody} numberOfLines={4}>
               {newsOverlayStore.latestNews}
             </Text>
           </View>
@@ -385,17 +468,17 @@ export function MapHomeScreen() {
         {/* Grabber + store name */}
         <View style={styles.grabberArea} {...panResponder.panHandlers}>
           <View style={styles.grabber} />
-          <Text style={styles.storeName} numberOfLines={1}>
-            {isLoadingStore
-              ? '매장 정보를 불러오는 중...'
-              : (focusedStore?.name ?? '주변 매장을 탐색 중...')}
-          </Text>
+          {focusedStore && !isLoadingStore ? (
+            <Text style={styles.storeName} numberOfLines={1}>
+              {focusedStore.name}
+            </Text>
+          ) : (
+            <TitleSkeleton opacity={skeletonOpacity} shimmer={shimmerTranslate} />
+          )}
         </View>
 
         {/* Preview row */}
-        {isLoadingStore ? (
-          <StoreSkeleton opacity={skeletonOpacity} />
-        ) : focusedStore ? (
+        {focusedStore && !isLoadingStore ? (
           <View style={styles.previewRow}>
             {focusedStore.images[0] ? (
               <Image
@@ -415,7 +498,9 @@ export function MapHomeScreen() {
               </Text>
             </View>
           </View>
-        ) : null}
+        ) : (
+          <StoreSkeleton opacity={skeletonOpacity} shimmer={shimmerTranslate} />
+        )}
 
         {/* Full detail content */}
         <ScrollView
@@ -496,7 +581,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 10,
-    padding: 14,
+    paddingHorizontal: 14,
+    paddingTop: 14,
+    paddingBottom: 20,
+    minHeight: 120,
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
     shadowColor: '#191F28',
