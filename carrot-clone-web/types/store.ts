@@ -7,6 +7,8 @@ export interface StoreMarker {
   latestNews: string | null;
   ownerName: string;
   ownerProfileImageUrl: string | null;
+  inventoryCount?: number | null;
+  inventoryUpdatedAt?: string | null;
 }
 
 export interface CenterSquareBounds {

@@ -9,6 +9,8 @@ async function main() {
   await prisma.userCoupon.deleteMany();
   await prisma.treasureSpot.deleteMany();
   await prisma.coupon.deleteMany();
+  await prisma.storeInventory.deleteMany();
+  await prisma.trendingItem.deleteMany();
   await prisma.reviewImage.deleteMany();
   await prisma.review.deleteMany();
   await prisma.storeNews.deleteMany();
@@ -236,7 +238,47 @@ async function main() {
     });
   }
 
-  console.log("Seed 완료: 매장 5개 + 뉴스 3개 + 리뷰 10개 + 쿠폰 1개 + 보물상자 1개 입력");
+  // 두바이쫀득쿠키 트렌딩 아이템 + 카페 매장 재고
+  const dubaiCookie = await prisma.trendingItem.create({
+    data: {
+      slug: "dubai_cookie",
+      name: "두바이쫀득쿠키",
+      emoji: "🍪",
+      description: "두바이 감성 피스타치오 필링 쫀득 쿠키",
+      isActive: true,
+    },
+  });
+
+  const cafeStores = await prisma.store.findMany({ where: { category: "카페" } });
+
+  // 카페별 재고 (각기 다른 수량, 업데이트 시각)
+  const inventorySeed: { name: string; quantity: number; note: string; minutesAgo: number }[] = [
+    { name: "블루보틀 장덕점", quantity: 8,  note: "오늘 입고분 있어요!", minutesAgo: 20  },
+    { name: "카페 드 파리",    quantity: 3,  note: "마감 임박!",         minutesAgo: 55  },
+    { name: "로스터리 랩",     quantity: 0,  note: "내일 오전 재입고 예정", minutesAgo: 130 },
+  ];
+
+  for (const cafeStore of cafeStores) {
+    const seed = inventorySeed.find((s) => s.name === cafeStore.name);
+    if (!seed) continue;
+
+    const updatedAt = new Date(Date.now() - seed.minutesAgo * 60 * 1000);
+
+    // updatedAt은 @updatedAt 자동관리라 직접 삽입은 raw SQL로 처리
+    const inv = await prisma.storeInventory.create({
+      data: {
+        storeId: cafeStore.id,
+        trendingItemId: dubaiCookie.id,
+        quantity: seed.quantity,
+        note: seed.note,
+      },
+    });
+
+    // updatedAt 백데이팅 (seed 데이터 연출용)
+    await prisma.$executeRaw`UPDATE "StoreInventory" SET "updatedAt" = ${updatedAt.toISOString()} WHERE "id" = ${inv.id}`;
+  }
+
+  console.log("Seed 완료: 매장 5개 + 뉴스 3개 + 리뷰 10개 + 쿠폰 1개 + 보물상자 1개 + 두쫀쿠 재고 3개 입력");
 }
 
 main()

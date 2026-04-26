@@ -7,6 +7,7 @@ export async function GET(request: NextRequest) {
   const swLng = parseFloat(searchParams.get("swLng") ?? "");
   const neLat = parseFloat(searchParams.get("neLat") ?? "");
   const neLng = parseFloat(searchParams.get("neLng") ?? "");
+  const trendingSlug = searchParams.get("trendingSlug");
 
   if ([swLat, swLng, neLat, neLng].some(isNaN)) {
     return NextResponse.json({ error: "Missing or invalid query parameters" }, { status: 400 });
@@ -16,6 +17,9 @@ export async function GET(request: NextRequest) {
     where: {
       lat: { gte: swLat, lte: neLat },
       lng: { gte: swLng, lte: neLng },
+      ...(trendingSlug
+        ? { inventories: { some: { trendingItem: { slug: trendingSlug, isActive: true } } } }
+        : {}),
     },
     select: {
       id: true,
@@ -30,14 +34,45 @@ export async function GET(request: NextRequest) {
         take: 1,
         select: { content: true },
       },
+      ...(trendingSlug
+        ? {
+            inventories: {
+              where: { trendingItem: { slug: trendingSlug } },
+              select: { quantity: true, updatedAt: true },
+              take: 1,
+            },
+          }
+        : {}),
     },
+    ...(trendingSlug
+      ? { orderBy: { inventories: { _count: "desc" } } }
+      : {}),
   });
 
-  const result = stores.map((s) => ({
-    ...s,
-    latestNews: s.news[0]?.content ?? null,
-    news: undefined,
-  }));
+  const result = stores.map((s) => {
+    const { news, inventories, ...rest } = s as typeof s & {
+      inventories?: { quantity: number; updatedAt: Date }[];
+    };
+    return {
+      ...rest,
+      latestNews: news[0]?.content ?? null,
+      ...(trendingSlug && inventories?.[0]
+        ? {
+            inventoryCount: inventories[0].quantity,
+            inventoryUpdatedAt: inventories[0].updatedAt.toISOString(),
+          }
+        : {}),
+    };
+  });
+
+  // 트렌딩 필터 시: 최근 업데이트 순 정렬
+  if (trendingSlug) {
+    result.sort((a, b) => {
+      const aTime = a.inventoryUpdatedAt ? new Date(a.inventoryUpdatedAt).getTime() : 0;
+      const bTime = b.inventoryUpdatedAt ? new Date(b.inventoryUpdatedAt).getTime() : 0;
+      return bTime - aTime;
+    });
+  }
 
   return NextResponse.json(result);
 }

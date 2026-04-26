@@ -1,18 +1,23 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Image, ImageSourcePropType, ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import { colors } from './styles';
 
+interface ImageIcon {
+  type: 'image';
+  source: ImageSourcePropType;
+}
+
 interface CategoryItem {
   value: string;
   label: string;
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: keyof typeof Ionicons.glyphMap | ImageIcon;
   color: string;
   disabled?: boolean;
 }
 
 const CATEGORIES: CategoryItem[] = [
-  { value: '__treasure__', label: '두쫀쿠', icon: 'ticket-outline', color: '#FF6F0F' },
+  { value: '__trending__:dubai_cookie', label: '두쫀쿠', icon: { type: 'image', source: require('../../assets/images/dubai_cookie.png') }, color: '#FF6F0F' },
   { value: '포장주문', label: '포장주문', icon: 'bag-handle-outline', color: '#3182F6' },
   { value: '음식점', label: '음식점', icon: 'restaurant-outline', color: '#F04438' },
   { value: '운동', label: '운동', icon: 'barbell-outline', color: '#12B886' },
@@ -49,11 +54,18 @@ export function CategoryFilterBar({ selectedCategory, onCategoryChange }: Props)
               isSelected && { backgroundColor: cat.color },
             ]}
           >
-            <Ionicons
-              name={cat.icon}
-              size={14}
-              color={isSelected ? colors.gray00 : cat.color}
-            />
+            {typeof cat.icon === 'object' && cat.icon.type === 'image' ? (
+              <Image
+                source={cat.icon.source}
+                style={[styles.iconImage, isSelected && { tintColor: colors.gray00 }]}
+              />
+            ) : (
+              <Ionicons
+                name={cat.icon as keyof typeof Ionicons.glyphMap}
+                size={14}
+                color={isSelected ? colors.gray00 : cat.color}
+              />
+            )}
             <Text
               style={[
                 styles.label,
@@ -94,5 +106,9 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 13,
     fontWeight: '500',
+  },
+  iconImage: {
+    width: 14,
+    height: 14,
   },
 });

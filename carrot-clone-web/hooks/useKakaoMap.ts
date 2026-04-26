@@ -253,21 +253,33 @@ export function useKakaoMap() {
       neLng: String(ne.getLng()),
     });
 
+    const category = categoryFilterRef.current;
+    const trendingSlug = category?.startsWith("__trending__:")
+      ? category.slice("__trending__:".length)
+      : null;
+    if (trendingSlug) params.set("trendingSlug", trendingSlug);
+
     try {
       const response = await fetch(`/api/stores?${params.toString()}`);
       if (!response.ok) throw new Error("Failed to fetch stores");
 
       const stores = (await response.json()) as StoreMarker[];
-      allStoresRef.current = stores;
 
-      const category = categoryFilterRef.current;
-      if (category === "__treasure__") {
-        clearStoreMarkers();
-        currentStoresRef.current = [];
-      } else if (category !== null) {
-        renderStoreMarkers(stores.filter((s) => s.category === category));
-      } else {
+      if (trendingSlug) {
+        // 트렌딩 모드: 재고 있는 카페만 보여줌 (서버에서 이미 필터됨)
+        allStoresRef.current = stores;
         renderStoreMarkers(stores);
+      } else {
+        allStoresRef.current = stores;
+
+        if (category === "__treasure__") {
+          clearStoreMarkers();
+          currentStoresRef.current = [];
+        } else if (category !== null) {
+          renderStoreMarkers(stores.filter((s) => s.category === category));
+        } else {
+          renderStoreMarkers(stores);
+        }
       }
 
       const pixel = centerPixelRef.current;
@@ -280,7 +292,7 @@ export function useKakaoMap() {
     } catch (error) {
       console.error("[kakao] store marker fetch failed:", error);
     }
-  }, [renderStoreMarkers, calcCenterSquareBounds]);
+  }, [renderStoreMarkers, clearStoreMarkers, calcCenterSquareBounds]);
 
   const renderTreasureMarkers = useCallback(async (map: KakaoMapInstance) => {
     if (!window.kakao) return;
@@ -324,6 +336,10 @@ export function useKakaoMap() {
         clearStoreMarkers();
         currentStoresRef.current = [];
         treasureOverlayRefs.current.forEach((o) => o.setMap(map));
+      } else if (category?.startsWith("__trending__:")) {
+        // 트렌딩 필터: 보물 숨기고 재고 데이터 포함해서 재조회
+        treasureOverlayRefs.current.forEach((o) => o.setMap(null));
+        void fetchStoresInBounds();
       } else if (category !== null) {
         treasureOverlayRefs.current.forEach((o) => o.setMap(null));
         renderStoreMarkers(allStoresRef.current.filter((s) => s.category === category));
@@ -332,7 +348,7 @@ export function useKakaoMap() {
         renderStoreMarkers(allStoresRef.current);
       }
     },
-    [clearStoreMarkers, renderStoreMarkers],
+    [clearStoreMarkers, renderStoreMarkers, fetchStoresInBounds],
   );
 
   const moveToLocation = useCallback(

@@ -3,10 +3,38 @@ import { CATEGORY_ICONS } from "@/lib/category-icons";
 import { getCategoryIconKey } from "@/lib/map-utils";
 import { type StoreMarker } from "@/types/store";
 
+const TRENDING_RECENT_THRESHOLD_MS = 60 * 60 * 1000; // 1시간
+
+function ensureTrendingRecentStyle() {
+  if (document.getElementById("trending-recent-style")) return;
+  const style = document.createElement("style");
+  style.id = "trending-recent-style";
+  style.textContent = `
+    @keyframes trendingGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255,111,15,0), 0 8px 18px rgba(0,0,0,0.22); }
+      50%       { box-shadow: 0 0 0 10px rgba(255,111,15,0.28), 0 8px 18px rgba(0,0,0,0.22); }
+    }
+    .trending-recent-pin {
+      animation: trendingGlow 2s ease-in-out infinite;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
 export function createStoreMarkerElement(
   store: StoreMarker,
   onClickMarker: () => void,
 ): HTMLElement {
+  const hasInventory = store.inventoryCount !== undefined && store.inventoryCount !== null;
+  const isSoldOut = hasInventory && store.inventoryCount === 0;
+  const isRecentlyUpdated =
+    hasInventory &&
+    store.inventoryUpdatedAt !== null &&
+    store.inventoryUpdatedAt !== undefined &&
+    Date.now() - new Date(store.inventoryUpdatedAt).getTime() < TRENDING_RECENT_THRESHOLD_MS;
+
+  if (isRecentlyUpdated) ensureTrendingRecentStyle();
+
   const container = document.createElement("div");
   container.style.cssText = `
     position: relative;
@@ -16,11 +44,13 @@ export function createStoreMarkerElement(
     gap: 3px;
     transform: translateY(-3px);
     pointer-events: none;
+    ${isSoldOut ? "opacity: 0.45;" : ""}
   `;
 
   const iconKey = getCategoryIconKey(store.category);
 
   const pin = document.createElement("div");
+  pin.className = isRecentlyUpdated ? "trending-recent-pin" : "";
   pin.style.cssText = `
     width: 42px; height: 42px;
     display: grid; place-items: center;
@@ -56,6 +86,27 @@ export function createStoreMarkerElement(
 
   container.appendChild(pin);
   container.appendChild(label);
+
+  if (hasInventory) {
+    const badge = document.createElement("div");
+    badge.style.cssText = `
+      display: flex; align-items: center; gap: 3px;
+      padding: 2px 7px;
+      background: ${isSoldOut ? "#8B95A1" : "rgba(255,255,255,0.96)"};
+      border: 1.5px solid ${isSoldOut ? "#8B95A1" : CARROT_ORANGE};
+      border-radius: 999px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      font-size: 11px; font-weight: 700;
+      color: ${isSoldOut ? "#fff" : "#212124"};
+      white-space: nowrap;
+      pointer-events: none;
+    `;
+    badge.innerHTML = isSoldOut
+      ? `<span>품절</span>`
+      : `<img src="/assets/dubai_cookie.png" style="width:13px;height:13px;object-fit:contain;" /><span>${store.inventoryCount}개</span>`;
+    container.appendChild(badge);
+  }
+
   return container;
 }
 

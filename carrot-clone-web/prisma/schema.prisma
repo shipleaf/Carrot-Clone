@@ -21,12 +21,40 @@ model Store {
   ownerProfileImageUrl  String?
   createdAt             DateTime     @default(now())
 
-  images    StoreImage[]
-  hours     StoreHours[]
-  menuItems MenuItem[]
-  reviews   Review[]
-  news      StoreNews[]
-  coupons   Coupon[]
+  images      StoreImage[]
+  hours       StoreHours[]
+  menuItems   MenuItem[]
+  reviews     Review[]
+  news        StoreNews[]
+  coupons     Coupon[]
+  inventories StoreInventory[]
+}
+
+model TrendingItem {
+  id          Int              @id @default(autoincrement())
+  slug        String           @unique
+  name        String
+  emoji       String
+  description String?
+  isActive    Boolean          @default(true)
+  startedAt   DateTime         @default(now())
+  endedAt     DateTime?
+
+  inventories StoreInventory[]
+}
+
+model StoreInventory {
+  id             Int          @id @default(autoincrement())
+  storeId        Int
+  trendingItemId Int
+  quantity       Int          @default(0)
+  note           String?
+  updatedAt      DateTime     @updatedAt
+
+  store        Store        @relation(fields: [storeId], references: [id])
+  trendingItem TrendingItem @relation(fields: [trendingItemId], references: [id])
+
+  @@unique([storeId, trendingItemId])
 }
 
 model StoreImage {
