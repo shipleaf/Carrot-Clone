@@ -12,6 +12,7 @@ import {
   createStoreMarkerElement,
   createSmallBadgeElement,
   createFullBubbleElement,
+  createTreasureMarkerElement,
 } from "@/lib/map-overlays";
 import { type KakaoMapInstance, type KakaoMarkerInstance, type KakaoCustomOverlayInstance } from "@/types/kakao";
 import { type StoreMarker, type CenterSquareBounds } from "@/types/store";
@@ -24,6 +25,7 @@ export function useKakaoMap() {
   const mapInstanceRef = useRef<KakaoMapInstance | null>(null);
   const currentLocationMarkerRef = useRef<KakaoMarkerInstance | null>(null);
 
+  const treasureOverlayRefs = useRef<KakaoCustomOverlayInstance[]>([]);
   const storeOverlayRefs = useRef<KakaoCustomOverlayInstance[]>([]);
   const smallBadgeOverlaysRef = useRef<Map<number, KakaoCustomOverlayInstance>>(new Map());
   const fullBubbleOverlayRef = useRef<KakaoCustomOverlayInstance | null>(null);
@@ -31,6 +33,8 @@ export function useKakaoMap() {
   const focusedStoreIdRef = useRef<number | null>(null);
   const focusedStorePositionRef = useRef<{ lat: number; lng: number } | null>(null);
   const currentStoresRef = useRef<StoreMarker[]>([]);
+  const allStoresRef = useRef<StoreMarker[]>([]);
+  const categoryFilterRef = useRef<string | null>(null);
   const centerSquareBoundsRef = useRef<CenterSquareBounds | null>(null);
   const centerPixelRef = useRef<{ x: number; y: number; squareHalfSize: number } | null>(null);
   const focusRequestSeqRef = useRef(0);
@@ -134,9 +138,7 @@ export function useKakaoMap() {
     const map = mapInstanceRef.current;
     if (!window.kakao || !map) return;
 
-    console.log("센터 찾기");
     const center = getBoundsCenter(bounds);
-    console.log("센터: " + center.lat + " " + center.lng);
     const params = new URLSearchParams({
       swLat: String(bounds.swLat),
       swLng: String(bounds.swLng),
@@ -256,7 +258,17 @@ export function useKakaoMap() {
       if (!response.ok) throw new Error("Failed to fetch stores");
 
       const stores = (await response.json()) as StoreMarker[];
-      renderStoreMarkers(stores);
+      allStoresRef.current = stores;
+
+      const category = categoryFilterRef.current;
+      if (category === "__treasure__") {
+        clearStoreMarkers();
+        currentStoresRef.current = [];
+      } else if (category !== null) {
+        renderStoreMarkers(stores.filter((s) => s.category === category));
+      } else {
+        renderStoreMarkers(stores);
+      }
 
       const pixel = centerPixelRef.current;
       if (pixel) {
@@ -269,6 +281,59 @@ export function useKakaoMap() {
       console.error("[kakao] store marker fetch failed:", error);
     }
   }, [renderStoreMarkers, calcCenterSquareBounds]);
+
+  const renderTreasureMarkers = useCallback(async (map: KakaoMapInstance) => {
+    if (!window.kakao) return;
+
+    for (const overlay of treasureOverlayRefs.current) {
+      overlay.setMap(null);
+    }
+    treasureOverlayRefs.current = [];
+
+    try {
+      const response = await fetch("/api/treasure-spots");
+      if (!response.ok) return;
+      const spots = (await response.json()) as { id: number; lat: number; lng: number; couponId: number }[];
+
+      treasureOverlayRefs.current = spots.map((spot) => {
+        const position = new window.kakao!.maps.LatLng(spot.lat, spot.lng);
+        const el = createTreasureMarkerElement(spot.couponId, () => {
+          console.log("[treasure] send to native", spot.couponId);
+          sendToNative({ type: "treasureClicked", couponId: spot.couponId });
+        });
+        return new window.kakao!.maps.CustomOverlay({
+          map,
+          position,
+          content: el,
+          xAnchor: 0.5,
+          yAnchor: 1.1,
+        });
+      });
+    } catch (error) {
+      console.error("[kakao] treasure spot fetch failed:", error);
+    }
+  }, []);
+
+  const applyFilter = useCallback(
+    (category: string | null) => {
+      categoryFilterRef.current = category;
+      const map = mapInstanceRef.current;
+      if (!map || !window.kakao) return;
+
+      if (category === "__treasure__") {
+        clearStoreMarkers();
+        currentStoresRef.current = [];
+        treasureOverlayRefs.current.forEach((o) => o.setMap(map));
+      } else if (category !== null) {
+        treasureOverlayRefs.current.forEach((o) => o.setMap(null));
+        renderStoreMarkers(allStoresRef.current.filter((s) => s.category === category));
+      } else {
+        treasureOverlayRefs.current.forEach((o) => o.setMap(map));
+        renderStoreMarkers(allStoresRef.current);
+      }
+    },
+    [clearStoreMarkers, renderStoreMarkers],
+  );
 
   const moveToLocation = useCallback(
     (lat: number, lng: number) => {
@@ -311,6 +376,7 @@ export function useKakaoMap() {
           void fetchStoresInBounds();
         });
         void fetchStoresInBounds();
+        void renderTreasureMarkers(map);
 
         setStatus("ready");
       });
@@ -329,7 +395,7 @@ export function useKakaoMap() {
     script.onload = () => initializeMap();
     script.onerror = () => setStatus("error");
     document.head.appendChild(script);
-  }, [fetchStoresInBounds]);
+  }, [fetchStoresInBounds, renderTreasureMarkers]);
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -340,6 +406,15 @@ export function useKakaoMap() {
     window.addEventListener("nativeLocation", handler);
     return () => window.removeEventListener("nativeLocation", handler);
   }, [moveToLocation]);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const { category } = (e as CustomEvent<{ category: string | null }>).detail;
+      applyFilter(category);
+    };
+    window.addEventListener("categoryFilter", handler);
+    return () => window.removeEventListener("categoryFilter", handler);
+  }, [applyFilter]);
 
   useEffect(() => {
     const handler = (e: Event) => {

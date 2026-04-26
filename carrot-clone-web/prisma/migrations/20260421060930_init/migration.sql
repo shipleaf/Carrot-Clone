@@ -1,4 +1,3 @@
--- CreateTable
 CREATE TABLE "Store" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name" TEXT NOT NULL,
@@ -14,7 +13,6 @@ CREATE TABLE "Store" (
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- CreateTable
 CREATE TABLE "StoreImage" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "storeId" INTEGER NOT NULL,
@@ -23,7 +21,6 @@ CREATE TABLE "StoreImage" (
     CONSTRAINT "StoreImage_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
--- CreateTable
 CREATE TABLE "StoreHours" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "storeId" INTEGER NOT NULL,
@@ -34,7 +31,6 @@ CREATE TABLE "StoreHours" (
     CONSTRAINT "StoreHours_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
--- CreateTable
 CREATE TABLE "MenuItem" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "storeId" INTEGER NOT NULL,
@@ -45,7 +41,6 @@ CREATE TABLE "MenuItem" (
     CONSTRAINT "MenuItem_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
--- CreateTable
 CREATE TABLE "Review" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "storeId" INTEGER NOT NULL,
@@ -58,7 +53,6 @@ CREATE TABLE "Review" (
     CONSTRAINT "Review_storeId_fkey" FOREIGN KEY ("storeId") REFERENCES "Store" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
--- CreateTable
 CREATE TABLE "ReviewImage" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "reviewId" INTEGER NOT NULL,

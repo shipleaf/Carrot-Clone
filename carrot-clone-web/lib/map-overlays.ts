@@ -91,6 +91,101 @@ export function createSmallBadgeElement(): HTMLElement {
   return wrapper;
 }
 
+function ensureTreasureStyle() {
+  if (document.getElementById("treasure-marker-style")) return;
+  const style = document.createElement("style");
+  style.id = "treasure-marker-style";
+  style.textContent = `
+    @keyframes treasureGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255,200,57,0), 0 6px 16px rgba(0,0,0,0.22); }
+      50%       { box-shadow: 0 0 0 10px rgba(255,200,57,0.28), 0 6px 16px rgba(0,0,0,0.22); }
+    }
+    @keyframes treasurePulseRing {
+      0%   { transform: scale(1);   opacity: 0.55; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+    .treasure-pin {
+      animation: treasureGlow 2s ease-in-out infinite;
+    }
+    .treasure-ring {
+      animation: treasurePulseRing 2s ease-out infinite;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+export function createTreasureMarkerElement(
+  couponId: number,
+  onClick: () => void,
+): HTMLElement {
+  ensureTreasureStyle();
+
+  const container = document.createElement("div");
+  container.style.cssText = `
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    pointer-events: none;
+  `;
+
+  // 펄스 링
+  const ring = document.createElement("div");
+  ring.className = "treasure-ring";
+  ring.style.cssText = `
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 48px; height: 48px;
+    margin: -24px 0 0 -24px;
+    border-radius: 999px;
+    background: rgba(255,200,57,0.35);
+    pointer-events: none;
+  `;
+
+  const pin = document.createElement("div");
+  pin.className = "treasure-pin";
+  pin.style.cssText = `
+    width: 48px; height: 48px;
+    display: grid; place-items: center;
+    background: #FFC839;
+    border: 3px solid #fff;
+    border-radius: 999px;
+    cursor: pointer;
+    pointer-events: auto;
+    font-size: 24px;
+    line-height: 1;
+    position: relative;
+    z-index: 1;
+  `;
+  pin.textContent = "🎁";
+  pin.dataset.couponId = String(couponId);
+  pin.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    console.log("[treasure] clicked", couponId);
+    onClick();
+  });
+
+  const label = document.createElement("div");
+  label.style.cssText = `
+    padding: 3px 8px;
+    background: rgba(255,255,255,0.96);
+    border: 1px solid rgba(255,200,57,0.5);
+    border-radius: 999px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+    font-size: 11px; font-weight: 700; color: #8F3206;
+    white-space: nowrap;
+    pointer-events: none;
+  `;
+  label.textContent = "쿠폰 발견!";
+
+  container.appendChild(ring);
+  container.appendChild(pin);
+  container.appendChild(label);
+  return container;
+}
+
 function ensurePopInStyle() {
   if (document.getElementById("store-popup-style")) return;
   const style = document.createElement("style");

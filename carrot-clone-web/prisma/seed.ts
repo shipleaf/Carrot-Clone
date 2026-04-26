@@ -6,6 +6,9 @@ const adapter = new PrismaBetterSqlite3({ url: path.resolve(process.cwd(), "dev.
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
+  await prisma.userCoupon.deleteMany();
+  await prisma.treasureSpot.deleteMany();
+  await prisma.coupon.deleteMany();
   await prisma.reviewImage.deleteMany();
   await prisma.review.deleteMany();
   await prisma.storeNews.deleteMany();
@@ -212,7 +215,28 @@ async function main() {
     });
   }
 
-  console.log("Seed 완료: 매장 5개 + 뉴스 3개 + 리뷰 10개 입력");
+  // 블루보틀 장덕점 쿠폰 + 보물상자 위치
+  const bluebottle = await prisma.store.findFirst({ where: { name: "블루보틀 장덕점" } });
+  if (bluebottle) {
+    const coupon = await prisma.coupon.create({
+      data: {
+        storeId: bluebottle.id,
+        title: "아메리카노 1잔 무료 증정",
+        description: "블루보틀 장덕점 방문 시 사용 가능. 1인 1매 한정.",
+        expiresAt: new Date("2026-05-31T23:59:59Z"),
+      },
+    });
+
+    await prisma.treasureSpot.create({
+      data: {
+        lat: 35.18977523571425,
+        lng: 126.81170817158458,
+        couponId: coupon.id,
+      },
+    });
+  }
+
+  console.log("Seed 완료: 매장 5개 + 뉴스 3개 + 리뷰 10개 + 쿠폰 1개 + 보물상자 1개 입력");
 }
 
 main()

@@ -26,6 +26,7 @@ model Store {
   menuItems MenuItem[]
   reviews   Review[]
   news      StoreNews[]
+  coupons   Coupon[]
 }
 
 model StoreImage {
@@ -88,4 +89,42 @@ model StoreNews {
   createdAt DateTime @default(now())
 
   store Store @relation(fields: [storeId], references: [id])
+}
+
+model Coupon {
+  id          Int       @id @default(autoincrement())
+  storeId     Int
+  title       String
+  description String?
+  imageUrl    String?
+  expiresAt   DateTime?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+
+  store         Store          @relation(fields: [storeId], references: [id])
+  treasureSpots TreasureSpot[]
+  userCoupons   UserCoupon[]
+}
+
+model TreasureSpot {
+  id        Int      @id @default(autoincrement())
+  lat       Float
+  lng       Float
+  couponId  Int
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  coupon Coupon @relation(fields: [couponId], references: [id])
+}
+
+model UserCoupon {
+  id        Int       @id @default(autoincrement())
+  userId    String
+  couponId  Int
+  claimedAt DateTime  @default(now())
+  usedAt    DateTime?
+
+  coupon Coupon @relation(fields: [couponId], references: [id])
+
+  @@unique([userId, couponId])
 }
