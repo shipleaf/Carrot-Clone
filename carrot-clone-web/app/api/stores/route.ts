@@ -32,7 +32,13 @@ export async function GET(request: NextRequest) {
       news: {
         orderBy: { createdAt: "desc" },
         take: 1,
-        select: { content: true },
+        select: {
+          id: true,
+          content: true,
+          likeCount: true,
+          viewCount: true,
+          createdAt: true,
+        },
       },
       ...(trendingSlug
         ? {
@@ -56,6 +62,10 @@ export async function GET(request: NextRequest) {
     return {
       ...rest,
       latestNews: news[0]?.content ?? null,
+      latestNewsId: news[0]?.id ?? null,
+      latestNewsLikeCount: news[0]?.likeCount ?? null,
+      latestNewsViewCount: news[0]?.viewCount ?? null,
+      latestNewsCreatedAt: news[0]?.createdAt.toISOString() ?? null,
       ...(trendingSlug && inventories?.[0]
         ? {
             inventoryCount: inventories[0].quantity,

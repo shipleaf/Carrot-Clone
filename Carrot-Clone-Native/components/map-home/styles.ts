@@ -24,6 +24,16 @@ export const styles = StyleSheet.create({
     right: 0,
     gap: 8,
   },
+  filterRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingLeft: 16,
+  },
+  filterScrollWrap: {
+    flex: 1,
+    minWidth: 0,
+  },
   newsOverlay: {
     position: 'absolute',
     left: 16,
@@ -73,6 +83,18 @@ export const styles = StyleSheet.create({
     lineHeight: 19,
     marginTop: 4,
   },
+  newsOverlayMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 8,
+  },
+  newsOverlayMetaText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.gray600,
+    marginRight: 8,
+  },
   newsCloseBtn: {
     width: 24,
     height: 24,
@@ -98,6 +120,9 @@ export const styles = StyleSheet.create({
     paddingTop: 10,
     alignItems: 'center',
   },
+  grabberAreaExpanded: {
+    height: GRABBER_AREA,
+  },
   grabber: {
     width: 36,
     height: 4,
@@ -107,6 +132,7 @@ export const styles = StyleSheet.create({
   },
   storeName: {
     fontSize: 16,
+    lineHeight: 20,
     fontWeight: '700',
     color: colors.gray900,
     paddingHorizontal: 20,
@@ -147,6 +173,100 @@ export const styles = StyleSheet.create({
   fullContent: {
     flex: 1,
   },
+  fullContentInner: {
+    paddingTop: 8,
+  },
+  fullContentInnerExpanded: {
+    paddingTop: 18,
+  },
+  sheetActionBar: {
+    minHeight: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 14,
+    marginBottom: 6,
+  },
+  sheetActionRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  sheetIconButton: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.gray00,
+  },
+  sheetHero: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+  },
+  sheetHeroText: {
+    flex: 1,
+    minWidth: 0,
+    gap: 7,
+  },
+  heroStoreName: {
+    fontSize: 24,
+    lineHeight: 30,
+    fontWeight: '800',
+    color: colors.gray900,
+  },
+  heroMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 4,
+  },
+  heroMetaText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.gray800,
+  },
+  heroMetaDot: {
+    fontSize: 13,
+    color: colors.gray300,
+    marginHorizontal: 1,
+  },
+  heroSubText: {
+    fontSize: 13,
+    lineHeight: 19,
+    color: colors.gray600,
+  },
+  followButton: {
+    height: 36,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 2,
+    paddingHorizontal: 12,
+    borderRadius: 18,
+    backgroundColor: colors.carrot500,
+  },
+  followButtonText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: colors.gray00,
+  },
+  imageCarousel: {
+    marginBottom: 18,
+  },
+  imageCarouselContent: {
+    gap: 10,
+    paddingHorizontal: 20,
+  },
+  carouselImage: {
+    width: 126,
+    height: 168,
+    borderRadius: 12,
+    backgroundColor: colors.gray100,
+  },
   divider: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: colors.gray200,
@@ -172,6 +292,30 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 16,
     paddingBottom: 10,
+  },
+  newsCard: {
+    marginHorizontal: 20,
+    marginBottom: 10,
+    padding: 14,
+    borderRadius: 12,
+    backgroundColor: colors.gray100,
+    gap: 10,
+  },
+  newsCardContent: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: colors.gray800,
+  },
+  newsCardMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  newsCardMetaText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.gray600,
+    marginRight: 8,
   },
   menuRow: {
     flexDirection: 'row',

@@ -1,5 +1,5 @@
-import { Image, ImageSourcePropType, ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Image, ImageSourcePropType, ScrollView, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import { colors } from './styles';
 
@@ -17,7 +17,12 @@ interface CategoryItem {
 }
 
 const CATEGORIES: CategoryItem[] = [
-  { value: '__trending__:dubai_cookie', label: '두쫀쿠', icon: { type: 'image', source: require('../../assets/images/dubai_cookie.png') }, color: '#FF6F0F' },
+  {
+    value: '__trending__:dubai_cookie',
+    label: '두바이쿠키',
+    icon: { type: 'image', source: require('../../assets/images/dubai_cookie.png') },
+    color: '#FF6F0F',
+  },
   { value: '포장주문', label: '포장주문', icon: 'bag-handle-outline', color: '#3182F6' },
   { value: '음식점', label: '음식점', icon: 'restaurant-outline', color: '#F04438' },
   { value: '운동', label: '운동', icon: 'barbell-outline', color: '#12B886' },
@@ -35,25 +40,19 @@ export function CategoryFilterBar({ selectedCategory, onCategoryChange }: Props)
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.contentContainer}
-    >
+      contentContainerStyle={styles.contentContainer}>
       {CATEGORIES.map((cat) => {
         const isSelected = selectedCategory === cat.value;
         return (
           <TouchableOpacity
             key={cat.value}
             activeOpacity={cat.disabled ? 1 : 0.75}
-            onPress={
-              cat.disabled
-                ? undefined
-                : () => onCategoryChange(isSelected ? null : cat.value)
-            }
+            onPress={cat.disabled ? undefined : () => onCategoryChange(isSelected ? null : cat.value)}
             style={[
               styles.button,
               { borderColor: isSelected ? cat.color : colors.gray300 },
               isSelected && { backgroundColor: cat.color },
-            ]}
-          >
+            ]}>
             {typeof cat.icon === 'object' && cat.icon.type === 'image' ? (
               <Image
                 source={cat.icon.source}
@@ -66,12 +65,7 @@ export function CategoryFilterBar({ selectedCategory, onCategoryChange }: Props)
                 color={isSelected ? colors.gray00 : cat.color}
               />
             )}
-            <Text
-              style={[
-                styles.label,
-                { color: isSelected ? colors.gray00 : colors.gray800 },
-              ]}
-            >
+            <Text style={[styles.label, { color: isSelected ? colors.gray00 : colors.gray800 }]}>
               {cat.label}
             </Text>
           </TouchableOpacity>
@@ -85,7 +79,7 @@ const styles = StyleSheet.create({
   contentContainer: {
     flexDirection: 'row',
     gap: 8,
-    paddingHorizontal: 16,
+    paddingRight: 16,
     paddingVertical: 2,
   },
   button: {

@@ -19,6 +19,7 @@ model Store {
   description           String?
   ownerName             String
   ownerProfileImageUrl  String?
+  followerCount         Int          @default(0)
   createdAt             DateTime     @default(now())
 
   images      StoreImage[]
@@ -114,6 +115,8 @@ model StoreNews {
   id        Int      @id @default(autoincrement())
   storeId   Int
   content   String
+  likeCount Int      @default(0)
+  viewCount Int      @default(0)
   createdAt DateTime @default(now())
 
   store Store @relation(fields: [storeId], references: [id])

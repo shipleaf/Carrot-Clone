@@ -55,10 +55,9 @@ export function useMapWebViewBridge({
 
       const height = heightRef.current;
       const width = widthRef.current;
-      const bottomInset = bottomInsetRef.current;
       const webviewOffset = nextSnap === 1 ? 50 : 0;
       const visibleScreenBottom =
-        nextSnap === 0 ? height - PEEK - bottomInset : nextSnap === 1 ? height * 0.7 : height;
+        nextSnap === 0 ? height - PEEK : nextSnap === 1 ? height * 0.7 : height;
       const centerY = webviewOffset + visibleScreenBottom / 2;
       const centerX = width / 2;
 
@@ -76,6 +75,15 @@ export function useMapWebViewBridge({
     webviewRef.current?.injectJavaScript(`
       window.dispatchEvent(new CustomEvent('categoryFilter', {
         detail: { category: ${JSON.stringify(category)} }
+      }));
+      true;
+    `);
+  }, []);
+
+  const injectMoveToStore = useCallback((lat: number, lng: number) => {
+    webviewRef.current?.injectJavaScript(`
+      window.dispatchEvent(new CustomEvent('moveToStore', {
+        detail: { lat: ${lat}, lng: ${lng} }
       }));
       true;
     `);
@@ -126,6 +134,7 @@ export function useMapWebViewBridge({
     handleMessageData,
     injectCategoryFilter,
     injectCenterPoint,
+    injectMoveToStore,
     webviewRef,
   };
 }

@@ -5,6 +5,10 @@ export interface StoreMarker {
   lat: number;
   lng: number;
   latestNews: string | null;
+  latestNewsId?: number | null;
+  latestNewsLikeCount?: number | null;
+  latestNewsViewCount?: number | null;
+  latestNewsCreatedAt?: string | null;
   ownerName: string;
   ownerProfileImageUrl: string | null;
   inventoryCount?: number | null;

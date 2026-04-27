@@ -68,7 +68,10 @@ export function createStoreMarkerElement(
       <span class="smk">${CATEGORY_ICONS[iconKey]}</span>
     </div>
   `;
-  pin.addEventListener("click", onClickMarker);
+  pin.addEventListener("click", (event) => {
+    event.stopPropagation();
+    onClickMarker();
+  });
 
   const label = document.createElement("div");
   label.style.cssText = `
@@ -237,6 +240,17 @@ export function createTreasureMarkerElement(
   return container;
 }
 
+function formatTimeAgo(isoDate: string | null | undefined): string {
+  if (!isoDate) return "";
+  const diffMs = Date.now() - new Date(isoDate).getTime();
+  const diffMins = Math.floor(diffMs / (1000 * 60));
+  if (diffMins < 1) return "방금 전";
+  if (diffMins < 60) return `${diffMins}분 전`;
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `${diffHours}시간 전`;
+  return `${Math.floor(diffHours / 24)}일 전`;
+}
+
 function ensurePopInStyle() {
   if (document.getElementById("store-popup-style")) return;
   const style = document.createElement("style");
@@ -270,6 +284,27 @@ export function createFullBubbleElement(
     padding: 10px 14px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.15);
     max-width: 200px;
+  `;
+
+  const header = document.createElement("div");
+  header.style.cssText = `
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 5px;
+  `;
+
+  const label = document.createElement("span");
+  label.style.cssText = "font-size: 11px; font-weight: 700; color: #FF6F0F;";
+  label.textContent = "새소식";
+
+  const timeAgo = document.createElement("span");
+  timeAgo.style.cssText = "font-size: 11px; color: #6B7684;";
+  timeAgo.textContent = formatTimeAgo(store.latestNewsCreatedAt);
+
+  header.appendChild(label);
+  header.appendChild(timeAgo);
+
+  const content = document.createElement("div");
+  content.style.cssText = `
     font-size: 12px; line-height: 1.5; color: #212124;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -277,7 +312,10 @@ export function createFullBubbleElement(
     overflow: hidden;
     text-overflow: ellipsis;
   `;
-  bubble.textContent = store.latestNews ?? "";
+  content.textContent = store.latestNews ?? "";
+
+  bubble.appendChild(header);
+  bubble.appendChild(content);
 
   const tail = document.createElement("div");
   tail.style.cssText = `
@@ -293,6 +331,9 @@ export function createFullBubbleElement(
 
   wrapper.appendChild(bubble);
   wrapper.appendChild(tail);
-  wrapper.addEventListener("click", onClickBubble);
+  wrapper.addEventListener("click", (event) => {
+    event.stopPropagation();
+    onClickBubble();
+  });
   return wrapper;
 }

@@ -28,7 +28,7 @@ export function useBottomSheetSnap({
   bottomInsetRef.current = bottomInset;
 
   const snapToY = useCallback((nextSnap: Snap): number => {
-    if (nextSnap === 0) return heightRef.current - PEEK - bottomInsetRef.current;
+    if (nextSnap === 0) return heightRef.current - PEEK;
     if (nextSnap === 1) return heightRef.current * 0.7;
     return 0;
   }, []);
@@ -69,7 +69,7 @@ export function useBottomSheetSnap({
       },
       onPanResponderMove: (_, { dy }) => {
         const minY = 0;
-        const maxY = heightRef.current - PEEK - bottomInsetRef.current;
+        const maxY = heightRef.current - PEEK;
         const clamped = Math.max(minY - baseY.current, Math.min(maxY - baseY.current, dy));
         translateY.setValue(clamped);
       },
@@ -100,7 +100,7 @@ export function useBottomSheetSnap({
   ).current;
 
   const webViewShift = translateY.interpolate({
-    inputRange: [0, height * 0.7, height - PEEK - bottomInset],
+    inputRange: [0, height * 0.7, height - PEEK],
     outputRange: [0, WEBVIEW_MID_SNAP_SHIFT, 0],
     extrapolate: 'clamp',
   });
