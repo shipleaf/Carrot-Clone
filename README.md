@@ -32,8 +32,34 @@
 
 ## 서비스 화면
 
-<!-- 이미지 추가 예정 -->
-
+<table>
+  <tr>
+    <td align="center"><b>메인화면</b></td>
+    <td align="center"><b>새소식 탭</b></td>
+    <td align="center"><b>새소식 순위</b></td>
+  </tr>
+  <tr>
+    <td><img width="200" height="480" alt="메인화면" src="https://github.com/user-attachments/assets/47e5a1c2-bdc1-4cd0-9090-64470a86217c" /></td>
+    <td><img width="200" height="480" alt="새소식 탭" src="https://github.com/user-attachments/assets/8efacbea-6cf5-4265-b1ff-eadb48067979" /></td>
+    <td><img width="200" height="480" alt="새소식 순위" src="https://github.com/user-attachments/assets/18259230-caa3-4ea2-a039-ff0eea8cdd2b" /></td>
+  </tr>
+  <tr>
+    <td align="center"><b>보물상자 마커</b></td>
+    <td align="center"><b>쿠폰 발견</b></td>
+    <td align="center"><b>쿠폰 수령</b></td>
+  </tr>
+  <tr>
+    <td><img width="200" height="480" alt="보물상자 마커" src="https://github.com/user-attachments/assets/54d46b33-fae1-4982-8fb6-b5b3509e14b5" /></td>
+    <td><img width="200" height="480" alt="쿠폰 발견" src="https://github.com/user-attachments/assets/f58c003a-22a7-4648-92c1-7631125bcb96" /></td>
+    <td><img width="200" height="480" alt="Screenshot_1777258581" src="https://github.com/user-attachments/assets/2f3d98ff-d2ea-458f-827f-ee49adc98f4f" /></td>
+  </tr>
+   <tr>
+    <td align="center"><b>트렌드 음식 토글</b></td>
+  </tr>
+  <tr>
+    <td><img width="200" height="480" alt="트렌드 음식 토글" src="https://github.com/user-attachments/assets/e095beed-dd6b-4b21-90bb-0956b2ef5586" /></td>
+  </tr>
+</table>
 ---
 
 ## 아키텍처
