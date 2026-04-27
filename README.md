@@ -55,12 +55,86 @@
   </tr>
    <tr>
     <td align="center"><b>트렌드 음식 토글</b></td>
+     <td align="center"><b>매장 정보</b></td>
+     <td align="center"><b>매장 상세 정보</b></td>
   </tr>
   <tr>
     <td><img width="200" height="480" alt="트렌드 음식 토글" src="https://github.com/user-attachments/assets/e095beed-dd6b-4b21-90bb-0956b2ef5586" /></td>
+    <td><img width="200" height="480" alt="Screenshot_1777266723" src="https://github.com/user-attachments/assets/9cc5fbe4-b70c-40d8-aa0f-ad42692b3c4f" /></td>
+    <td><img width="200" height="480" alt="Screenshot_1777266714" src="https://github.com/user-attachments/assets/e2572c39-20d8-409d-ae71-e670de92d90e" /></td>
   </tr>
 </table>
 
+---
+
+## 🔬 A/B 시안 비교
+
+핵심 기능들에 대해 UX 가설을 세우고 두 가지 구현안을 직접 비교했습니다.
+
+---
+
+### 1. 새 소식 버블 — 포커스 시 확장 vs. 항상 노출
+
+**가설:** 소식 버블을 포커스 없이 항상 보여주면 사용자가 소식을 발견할 가능성이 높아진다.
+
+<table>
+  <tr>
+    <td align="center"><b>A — 포커스 시 버블 등장</b></td>
+    <td align="center"><b>B — 항상 모든 버블을 노출</b></td>
+  </tr>
+  <tr>
+    <td><img width="200" height="480" alt="새소식 버블 A" src="https://github.com/user-attachments/assets/47e5a1c2-bdc1-4cd0-9090-64470a86217c" /></td>
+    <td><img width="200" height="480" alt="새소식 버블 B" src="https://github.com/user-attachments/assets/01a45c90-ec43-41d6-bdd9-6d7f07bbc993" /></td>
+  </tr>
+</table>
+
+- **A안:** 지도 중앙에 가게가 들어올 때만 버블 노출. 지도가 깔끔하지만 사용자가 소식 정보를 얻지 않고 넘어갈 수 있음
+- **B안:** 소식 있는 가게는 처음부터 모든 버블을 항상 표시. 소식 발견율은 높아지지만 마커가 많을수록 지도가 복잡해짐, 사용자가 버블을 읽을 가능성이 낮아짐(정보 과다)
+- **트레이드오프:** Discovery 빈도 vs. 지도 가독성
+
+---
+
+### 2. 바텀시트 진입 깊이 — 요약 vs. 전체 직행
+
+**가설:** 마커 클릭 시 전체 상세로 바로 진입하면 매장 정보 탐색 완료까지 인터랙션 수가 줄어든다.
+
+<table>
+  <tr>
+    <td align="center"><b>A — 클릭 → 요약(snap 1)</b></td>
+    <td align="center"><b>B — 클릭 → 전체(snap 2) 직행</b></td>
+  </tr>
+  <tr>
+    <td><img width="200" height="480" alt="바텀시트 A" src="https://github.com/user-attachments/assets/40d5848b-22d9-40a9-9db2-d8cd666783c0" /></td>
+    <td><img width="200" height="480" alt="바텀시트 B" src="https://github.com/user-attachments/assets/569aa5e9-ffc6-4e8e-ad1f-9be6b8174afb" /></td>
+  </tr>
+</table>
+
+- **A안:** 클릭 후 snap 1(요약)에 머물며 지도도 계속 볼 수 있음. 여러 가게를 빠르게 훑는 탐색 패턴에 적합, 매장 영업 정보 등 코어 정보를 상단에 배치하면 효과가 높아질 것으로 예상
+- **B안:** 클릭 즉시 snap 2(전체 상세) 진입. 이미 가게를 고른 의도로 클릭한 경우라면 단계를 줄여줌
+- **트레이드오프:** 탐색 편의성 vs. 정보 접근 속도
+
+---
+
+### 3. 보물 마커 노출 — 항상 표시 vs. 필터 선택 시만 표시
+
+**가설:** 보물 마커를 숨겨두면 탐험 동기가 생기고, 필터를 통해 의도적으로 찾는 경험이 게이미피케이션 효과를 높인다.
+
+<table>
+  <tr>
+    <td align="center"><b>A — 기본 지도에 항상 표시</b></td>
+    <td align="center"><b>B — 보물찾기 필터 선택 시만 표시</b></td>
+  </tr>
+  <tr>
+    <td><img width="200" height="480" alt="보물찾기 A" src="https://github.com/user-attachments/assets/54d46b33-fae1-4982-8fb6-b5b3509e14b5" /></td>
+    <td><img width="200" height="480" alt="보물찾기 B" src="https://github.com/user-attachments/assets/5faeccde-bac3-47a7-bf6f-aebfff58c364" /></td>
+  </tr>
+</table>
+
+- **A안:** 지도를 탐색하다 자연스럽게 보물을 발견. 별도 진입 없이 접근 가능하지만 지도의 UI 복잡도가 높아짐
+- **B안:** 카테고리 필터에서 보물찾기를 선택해야만 마커 노출. 능동적 탐험 경험을 유도하고, 일반 탐색 시 지도 노이즈를 줄임
+- **트레이드오프:** 자연 발견율 vs. 지도 복잡도 완화
+
+---
 
 ## 🏛️ 아키텍처
 
