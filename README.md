@@ -105,6 +105,139 @@ carrot-clone-web/      ← Next.js — 지도 레이어 (WebView로 임베드)
 
 ---
 
+## 데이터베이스 스키마
+
+> SQLite / Prisma ORM 사용
+
+### Store (가게)
+| 컬럼 | 타입 | 필수 | 설명 |
+|------|------|:----:|------|
+| id | Int | ✓ | 고유 식별자 (PK) |
+| name | String | ✓ | 가게 이름 |
+| category | String | ✓ | 카테고리 |
+| lat | Float | ✓ | 위도 |
+| lng | Float | ✓ | 경도 |
+| address | String | ✓ | 주소 |
+| phone | String | ✓ | 전화번호 |
+| instagramUrl | String? | | 인스타그램 URL |
+| description | String? | | 가게 설명 |
+| ownerName | String | ✓ | 사장님 이름 |
+| ownerProfileImageUrl | String? | | 사장님 프로필 이미지 URL |
+| followerCount | Int | ✓ | 팔로워 수 (기본값: 0) |
+| createdAt | DateTime | ✓ | 생성 일시 |
+
+### StoreImage (가게 이미지)
+| 컬럼 | 타입 | 필수 | 설명 |
+|------|------|:----:|------|
+| id | Int | ✓ | 고유 식별자 (PK) |
+| storeId | Int | ✓ | Store FK |
+| url | String | ✓ | 이미지 URL |
+| order | Int | ✓ | 이미지 순서 |
+
+### StoreHours (영업 시간)
+| 컬럼 | 타입 | 필수 | 설명 |
+|------|------|:----:|------|
+| id | Int | ✓ | 고유 식별자 (PK) |
+| storeId | Int | ✓ | Store FK |
+| dayOfWeek | Int | ✓ | 요일 (0=일 ~ 6=토) |
+| openTime | String | ✓ | 오픈 시간 |
+| closeTime | String | ✓ | 마감 시간 |
+| isClosed | Boolean | ✓ | 휴무 여부 (기본값: false) |
+
+### MenuItem (메뉴)
+| 컬럼 | 타입 | 필수 | 설명 |
+|------|------|:----:|------|
+| id | Int | ✓ | 고유 식별자 (PK) |
+| storeId | Int | ✓ | Store FK |
+| name | String | ✓ | 메뉴 이름 |
+| price | Int | ✓ | 가격 |
+| description | String? | | 메뉴 설명 |
+| imageUrl | String? | | 메뉴 이미지 URL |
+
+### Review (리뷰)
+| 컬럼 | 타입 | 필수 | 설명 |
+|------|------|:----:|------|
+| id | Int | ✓ | 고유 식별자 (PK) |
+| storeId | Int | ✓ | Store FK |
+| userId | String | ✓ | 작성자 ID |
+| userProfileImageUrl | String? | | 작성자 프로필 이미지 URL |
+| rating | Int | ✓ | 별점 |
+| content | String | ✓ | 리뷰 내용 |
+| likeCount | Int | ✓ | 좋아요 수 (기본값: 0) |
+| createdAt | DateTime | ✓ | 작성 일시 |
+
+### ReviewImage (리뷰 이미지)
+| 컬럼 | 타입 | 필수 | 설명 |
+|------|------|:----:|------|
+| id | Int | ✓ | 고유 식별자 (PK) |
+| reviewId | Int | ✓ | Review FK |
+| url | String | ✓ | 이미지 URL |
+
+### StoreNews (소식)
+| 컬럼 | 타입 | 필수 | 설명 |
+|------|------|:----:|------|
+| id | Int | ✓ | 고유 식별자 (PK) |
+| storeId | Int | ✓ | Store FK |
+| content | String | ✓ | 소식 내용 |
+| likeCount | Int | ✓ | 좋아요 수 (기본값: 0) |
+| viewCount | Int | ✓ | 조회수 (기본값: 0) |
+| createdAt | DateTime | ✓ | 작성 일시 |
+
+### Coupon (쿠폰)
+| 컬럼 | 타입 | 필수 | 설명 |
+|------|------|:----:|------|
+| id | Int | ✓ | 고유 식별자 (PK) |
+| storeId | Int | ✓ | Store FK |
+| title | String | ✓ | 쿠폰 제목 |
+| description | String? | | 쿠폰 설명 |
+| imageUrl | String? | | 쿠폰 이미지 URL |
+| expiresAt | DateTime? | | 만료 일시 |
+| isActive | Boolean | ✓ | 활성 여부 (기본값: true) |
+| createdAt | DateTime | ✓ | 생성 일시 |
+
+### TreasureSpot (쿠폰 보물 위치)
+| 컬럼 | 타입 | 필수 | 설명 |
+|------|------|:----:|------|
+| id | Int | ✓ | 고유 식별자 (PK) |
+| lat | Float | ✓ | 위도 |
+| lng | Float | ✓ | 경도 |
+| couponId | Int | ✓ | Coupon FK |
+| isActive | Boolean | ✓ | 활성 여부 (기본값: true) |
+| createdAt | DateTime | ✓ | 생성 일시 |
+
+### UserCoupon (유저 쿠폰 발급 이력)
+| 컬럼 | 타입 | 필수 | 설명 |
+|------|------|:----:|------|
+| id | Int | ✓ | 고유 식별자 (PK) |
+| userId | String | ✓ | 유저 ID |
+| couponId | Int | ✓ | Coupon FK |
+| claimedAt | DateTime | ✓ | 발급 일시 |
+| usedAt | DateTime? | | 사용 일시 |
+
+> (userId, couponId) 복합 유니크 제약 — 중복 발급 불가
+
+### TrendingItem (트렌딩 아이템)
+| 컬럼 | 타입 | 필수 | 설명 |
+|------|------|:----:|------|
+| id | Int | ✓ | 고유 식별자 (PK) |
+| slug | String | ✓ | URL 슬러그 (유니크) |
+| name | String | ✓ | 아이템 이름 |
+| emoji | String | ✓ | 이모지 |
+| description | String? | | 설명 |
+| isActive | Boolean | ✓ | 활성 여부 (기본값: true) |
+| startedAt | DateTime | ✓ | 트렌딩 시작 일시 |
+| endedAt | DateTime? | | 트렌딩 종료 일시 |
+
+### StoreInventory (가게별 트렌딩 아이템 재고)
+| 컬럼 | 타입 | 필수 | 설명 |
+|------|------|:----:|------|
+| id | Int | ✓ | 고유 식별자 (PK) |
+| storeId | Int | ✓ | Store FK |
+| trendingItemId | Int | ✓ | TrendingItem FK |
+| quantity | Int | ✓ | 재고 수량 (기본값: 0) |
+| note | String? | | 비고 |
+| updatedAt | DateTime | ✓ | 최종 수정 일시 |
+
 ## ⚙️ 로컬 실행
 
 ### 사전 조건
