@@ -60,7 +60,7 @@
     <td><img width="200" height="480" alt="트렌드 음식 토글" src="https://github.com/user-attachments/assets/e095beed-dd6b-4b21-90bb-0956b2ef5586" /></td>
   </tr>
 </table>
----
+
 
 ## 🏛️ 아키텍처
 
