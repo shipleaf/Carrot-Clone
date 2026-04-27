@@ -13,6 +13,22 @@ interface StoreDetailContentProps {
 export function StoreDetailContent({ store }: StoreDetailContentProps) {
   return (
     <>
+      {store.news.length > 0 && (
+        <>
+          <Text style={styles.sectionTitle}>새소식</Text>
+          {store.news.map((news) => (
+            <View key={news.id} style={styles.newsCard}>
+              <Text style={styles.newsCardContent}>{news.content}</Text>
+              <View style={styles.newsCardMeta}>
+                <Ionicons name="heart-outline" size={13} color={colors.gray600} />
+                <Text style={styles.newsCardMetaText}>{news.likeCount}</Text>
+                <Ionicons name="eye-outline" size={13} color={colors.gray600} />
+                <Text style={styles.newsCardMetaText}>{news.viewCount}</Text>
+              </View>
+            </View>
+          ))}
+        </>
+      )}
       <View style={styles.divider} />
       <View style={styles.detailRow}>
         <Ionicons name="location-outline" size={18} color={colors.gray600} />

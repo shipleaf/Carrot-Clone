@@ -193,14 +193,14 @@ export function useKakaoMap() {
     nullFocusCountRef.current = 0;
 
     if (storeInCenter.id === focusedStoreIdRef.current) {
-      if (storeInCenter.latestNews && !fullBubbleOverlayRef.current) {
+      if (storeInCenter.latestNews && !fullBubbleOverlayRef.current && categoryFilterRef.current === null) {
         smallBadgeOverlaysRef.current.get(storeInCenter.id)?.setMap(null);
         const pos = new window.kakao!.maps.LatLng(storeInCenter.lat, storeInCenter.lng);
         const bubbleEl = createFullBubbleElement(storeInCenter, () => {
           sendToNative({ type: "newsBubbleClicked", store: storeInCenter });
         });
         fullBubbleOverlayRef.current = new window.kakao!.maps.CustomOverlay({
-          map, position: pos, content: bubbleEl, xAnchor: 0.5, yAnchor: 3.4,
+          map, position: pos, content: bubbleEl, xAnchor: 0.5, yAnchor: 2.2,
         });
       }
       sendToNative({ type: "storeFocused", storeId: storeInCenter.id });
@@ -222,14 +222,14 @@ export function useKakaoMap() {
     focusedStoreIdRef.current = storeInCenter.id;
     focusedStorePositionRef.current = { lat: storeInCenter.lat, lng: storeInCenter.lng };
 
-    if (storeInCenter.latestNews) {
+    if (storeInCenter.latestNews && categoryFilterRef.current === null) {
       smallBadgeOverlaysRef.current.get(storeInCenter.id)?.setMap(null);
       const pos = new window.kakao!.maps.LatLng(storeInCenter.lat, storeInCenter.lng);
       const bubbleEl = createFullBubbleElement(storeInCenter, () => {
         sendToNative({ type: "newsBubbleClicked", store: storeInCenter });
       });
       fullBubbleOverlayRef.current = new window.kakao!.maps.CustomOverlay({
-        map, position: pos, content: bubbleEl, xAnchor: 0.5, yAnchor: 3.4,
+        map, position: pos, content: bubbleEl, xAnchor: 0.5, yAnchor: 2.2,
       });
     }
     sendToNative({ type: "storeFocused", storeId: storeInCenter.id });
@@ -362,6 +362,16 @@ export function useKakaoMap() {
     [fetchStoresInBounds],
   );
 
+  const moveToStore = useCallback(
+    (lat: number, lng: number) => {
+      if (!window.kakao || !mapInstanceRef.current) return;
+      const pos = new window.kakao.maps.LatLng(lat, lng);
+      mapInstanceRef.current.setCenter(pos);
+      void fetchStoresInBounds();
+    },
+    [fetchStoresInBounds],
+  );
+
   useEffect(() => {
     if (!kakaoMapApiKey) return;
 
@@ -422,6 +432,15 @@ export function useKakaoMap() {
     window.addEventListener("nativeLocation", handler);
     return () => window.removeEventListener("nativeLocation", handler);
   }, [moveToLocation]);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const { lat, lng } = (e as CustomEvent<{ lat: number; lng: number }>).detail;
+      moveToStore(lat, lng);
+    };
+    window.addEventListener("moveToStore", handler);
+    return () => window.removeEventListener("moveToStore", handler);
+  }, [moveToStore]);
 
   useEffect(() => {
     const handler = (e: Event) => {

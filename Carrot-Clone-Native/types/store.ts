@@ -28,6 +28,14 @@ export interface Review {
   userProfileImageUrl: string | null;
 }
 
+export interface StoreNewsItem {
+  id: number;
+  content: string;
+  likeCount: number;
+  viewCount: number;
+  createdAt: string;
+}
+
 export interface StoreDetail {
   id: number;
   name: string;
@@ -40,10 +48,14 @@ export interface StoreDetail {
   description: string | null;
   ownerName: string;
   ownerProfileImageUrl: string | null;
+  followerCount: number;
   latestNews: string | null;
+  ratingAverage: number | null;
+  reviewCount: number;
   images: StoreImage[];
   hours: StoreHours[];
   menuItems: MenuItem[];
+  news: StoreNewsItem[];
   reviews: Review[];
 }
 
@@ -62,4 +74,25 @@ export interface NewsOverlayStore {
   ownerName: string;
   ownerProfileImageUrl: string | null;
   latestNews: string;
+  latestNewsId?: number | null;
+  latestNewsLikeCount?: number | null;
+  latestNewsViewCount?: number | null;
+  latestNewsCreatedAt?: string | null;
+}
+
+export interface PopularNewsItem {
+  id: number;
+  content: string;
+  likeCount: number;
+  viewCount: number;
+  createdAt: string;
+  store: {
+    id: number;
+    name: string;
+    category: string;
+    lat: number;
+    lng: number;
+    ownerName: string;
+    ownerProfileImageUrl: string | null;
+  };
 }

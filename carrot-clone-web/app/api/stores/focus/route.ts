@@ -43,5 +43,12 @@ export async function GET(request: NextRequest) {
   });
 
   const { news, ...rest } = nearest;
-  return NextResponse.json({ ...rest, latestNews: news[0]?.content ?? null });
+  return NextResponse.json({
+    ...rest,
+    latestNews: news[0]?.content ?? null,
+    latestNewsId: news[0]?.id ?? null,
+    latestNewsLikeCount: news[0]?.likeCount ?? null,
+    latestNewsViewCount: news[0]?.viewCount ?? null,
+    latestNewsCreatedAt: news[0]?.createdAt.toISOString() ?? null,
+  });
 }

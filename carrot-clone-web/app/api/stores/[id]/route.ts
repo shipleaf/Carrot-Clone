@@ -19,7 +19,7 @@ export async function GET(
       hours: { orderBy: { dayOfWeek: "asc" } },
       menuItems: true,
       reviews: { include: { images: true } },
-      news: { orderBy: { createdAt: "desc" }, take: 1 },
+      news: { orderBy: { createdAt: "desc" } },
     },
   });
 
@@ -27,6 +27,18 @@ export async function GET(
     return NextResponse.json({ error: "Store not found" }, { status: 404 });
   }
 
+  const reviewCount = store.reviews.length;
+  const ratingAverage =
+    reviewCount > 0
+      ? store.reviews.reduce((sum, review) => sum + review.rating, 0) / reviewCount
+      : null;
+
   const { news, ...rest } = store;
-  return NextResponse.json({ ...rest, latestNews: news[0]?.content ?? null });
+  return NextResponse.json({
+    ...rest,
+    latestNews: news[0]?.content ?? null,
+    news,
+    ratingAverage,
+    reviewCount,
+  });
 }
