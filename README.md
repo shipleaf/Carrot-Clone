@@ -131,9 +131,3 @@ cd Carrot-Clone-Native
 npm install
 npx expo start
 ```
----
-
-## 참고
-
-- [당근 로컬 비즈니스 팀 소개](https://about.daangn.com/blog/archive/당근-로컬비즈니스-몰입-채용-팀문화/)
-- [지원 JD](https://about.daangn.com/jobs/7702533003/)
