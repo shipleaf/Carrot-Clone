@@ -23,6 +23,12 @@ const CATEGORIES: CategoryItem[] = [
     icon: { type: 'image', source: require('../../assets/images/dubai_cookie.png') },
     color: '#FF6F0F',
   },
+  {
+    value: '__treasure__',
+    label: '보물찾기',
+    icon: 'gift-outline',
+    color: '#F59E0B',
+  },
   { value: '포장주문', label: '포장주문', icon: 'bag-handle-outline', color: '#3182F6' },
   { value: '음식점', label: '음식점', icon: 'restaurant-outline', color: '#F04438' },
   { value: '운동', label: '운동', icon: 'barbell-outline', color: '#12B886' },

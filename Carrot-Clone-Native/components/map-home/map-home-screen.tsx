@@ -81,7 +81,7 @@ export function MapHomeScreen() {
 
   const handleStoreClicked = useCallback(
     (storeId: number | null) => {
-      animateTo(1);
+      animateTo(2);
 
       if (storeId !== null) {
         hideNewsOverlay();

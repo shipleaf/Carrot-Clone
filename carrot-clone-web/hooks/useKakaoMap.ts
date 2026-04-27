@@ -10,7 +10,6 @@ import { sendToNative } from "@/lib/native-bridge";
 import { getBoundsCenter } from "@/lib/map-utils";
 import {
   createStoreMarkerElement,
-  createSmallBadgeElement,
   createFullBubbleElement,
   createTreasureMarkerElement,
 } from "@/lib/map-overlays";
@@ -28,7 +27,7 @@ export function useKakaoMap() {
   const treasureOverlayRefs = useRef<KakaoCustomOverlayInstance[]>([]);
   const storeOverlayRefs = useRef<KakaoCustomOverlayInstance[]>([]);
   const smallBadgeOverlaysRef = useRef<Map<number, KakaoCustomOverlayInstance>>(new Map());
-  const fullBubbleOverlayRef = useRef<KakaoCustomOverlayInstance | null>(null);
+
 
   const focusedStoreIdRef = useRef<number | null>(null);
   const focusedStorePositionRef = useRef<{ lat: number; lng: number } | null>(null);
@@ -83,10 +82,6 @@ export function useKakaoMap() {
     smallBadgeOverlaysRef.current.forEach((overlay) => overlay.setMap(null));
     smallBadgeOverlaysRef.current.clear();
 
-    if (fullBubbleOverlayRef.current) {
-      fullBubbleOverlayRef.current.setMap(null);
-      fullBubbleOverlayRef.current = null;
-    }
   }, []);
 
   const renderStoreMarkers = useCallback(
@@ -113,15 +108,17 @@ export function useKakaoMap() {
         });
 
         if (store.latestNews) {
-          const badgeEl = createSmallBadgeElement();
-          const badgeOverlay = new window.kakao!.maps.CustomOverlay({
+          const bubbleEl = createFullBubbleElement(store, () => {
+            sendToNative({ type: "newsBubbleClicked", store });
+          });
+          const bubbleOverlay = new window.kakao!.maps.CustomOverlay({
             map,
             position,
-            content: badgeEl,
+            content: bubbleEl,
             xAnchor: 0.5,
-            yAnchor: 3.8,
+            yAnchor: 2.2,
           });
-          smallBadgeOverlaysRef.current.set(store.id, badgeOverlay);
+          smallBadgeOverlaysRef.current.set(store.id, bubbleOverlay);
         }
 
         return overlay;
@@ -173,17 +170,6 @@ export function useKakaoMap() {
         return;
       }
 
-      if (focusedStoreIdRef.current !== null) {
-        if (fullBubbleOverlayRef.current) {
-          fullBubbleOverlayRef.current.setMap(null);
-          fullBubbleOverlayRef.current = null;
-        }
-        const prevStore = currentStoresRef.current.find((s) => s.id === focusedStoreIdRef.current);
-        if (prevStore?.latestNews) {
-          smallBadgeOverlaysRef.current.get(prevStore.id)?.setMap(map);
-        }
-      }
-
       focusedStoreIdRef.current = null;
       focusedStorePositionRef.current = null;
       sendToNative({ type: "storeFocused", storeId: null });
@@ -192,46 +178,8 @@ export function useKakaoMap() {
 
     nullFocusCountRef.current = 0;
 
-    if (storeInCenter.id === focusedStoreIdRef.current) {
-      if (storeInCenter.latestNews && !fullBubbleOverlayRef.current && categoryFilterRef.current === null) {
-        smallBadgeOverlaysRef.current.get(storeInCenter.id)?.setMap(null);
-        const pos = new window.kakao!.maps.LatLng(storeInCenter.lat, storeInCenter.lng);
-        const bubbleEl = createFullBubbleElement(storeInCenter, () => {
-          sendToNative({ type: "newsBubbleClicked", store: storeInCenter });
-        });
-        fullBubbleOverlayRef.current = new window.kakao!.maps.CustomOverlay({
-          map, position: pos, content: bubbleEl, xAnchor: 0.5, yAnchor: 2.2,
-        });
-      }
-      sendToNative({ type: "storeFocused", storeId: storeInCenter.id });
-      return;
-    }
-
-    const prevId = focusedStoreIdRef.current;
-    if (prevId !== null) {
-      if (fullBubbleOverlayRef.current) {
-        fullBubbleOverlayRef.current.setMap(null);
-        fullBubbleOverlayRef.current = null;
-      }
-      const prevStore = currentStoresRef.current.find((s) => s.id === prevId);
-      if (prevStore?.latestNews) {
-        smallBadgeOverlaysRef.current.get(prevId)?.setMap(map);
-      }
-    }
-
     focusedStoreIdRef.current = storeInCenter.id;
     focusedStorePositionRef.current = { lat: storeInCenter.lat, lng: storeInCenter.lng };
-
-    if (storeInCenter.latestNews && categoryFilterRef.current === null) {
-      smallBadgeOverlaysRef.current.get(storeInCenter.id)?.setMap(null);
-      const pos = new window.kakao!.maps.LatLng(storeInCenter.lat, storeInCenter.lng);
-      const bubbleEl = createFullBubbleElement(storeInCenter, () => {
-        sendToNative({ type: "newsBubbleClicked", store: storeInCenter });
-      });
-      fullBubbleOverlayRef.current = new window.kakao!.maps.CustomOverlay({
-        map, position: pos, content: bubbleEl, xAnchor: 0.5, yAnchor: 2.2,
-      });
-    }
     sendToNative({ type: "storeFocused", storeId: storeInCenter.id });
   }, []);
 
@@ -313,8 +261,9 @@ export function useKakaoMap() {
           console.log("[treasure] send to native", spot.couponId);
           sendToNative({ type: "treasureClicked", couponId: spot.couponId });
         });
+        // 보물 마커는 __treasure__ 필터 선택 시에만 노출
         return new window.kakao!.maps.CustomOverlay({
-          map,
+          map: null,
           position,
           content: el,
           xAnchor: 0.5,
@@ -344,7 +293,7 @@ export function useKakaoMap() {
         treasureOverlayRefs.current.forEach((o) => o.setMap(null));
         renderStoreMarkers(allStoresRef.current.filter((s) => s.category === category));
       } else {
-        treasureOverlayRefs.current.forEach((o) => o.setMap(map));
+        treasureOverlayRefs.current.forEach((o) => o.setMap(null));
         renderStoreMarkers(allStoresRef.current);
       }
     },
