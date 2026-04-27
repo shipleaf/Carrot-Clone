@@ -30,7 +30,7 @@
 
 ---
 
-## 서비스 화면
+## 📱 서비스 화면
 
 <table>
   <tr>
@@ -62,7 +62,7 @@
 </table>
 ---
 
-## 아키텍처
+## 🏛️ 아키텍처
 
 ```
 Carrot-Clone-Native/   ← React Native (Expo) — 모바일 셸
@@ -83,7 +83,7 @@ carrot-clone-web/      ← Next.js — 지도 레이어 (WebView로 임베드)
 
 ---
 
-## 기술 스택
+## 🛠️ 기술 스택
 
 ### 웹 (`carrot-clone-web`)
 | 항목 | 내용 |
@@ -105,7 +105,7 @@ carrot-clone-web/      ← Next.js — 지도 레이어 (WebView로 임베드)
 
 ---
 
-## 로컬 실행
+## ⚙️ 로컬 실행
 
 ### 사전 조건
 - Node.js 20+, pnpm
